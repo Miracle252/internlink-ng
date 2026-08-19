@@ -1,69 +1,218 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth";
+import SignOutButton from "./components/SignOutButton";
 
-export default function Home() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-white text-gray-900">
+      <header className="border-b bg-white px-8 py-5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <Link
+            href="/"
+            className="text-2xl font-bold"
+          >
+            InternLink NG
+          </Link>
+
+          <div className="flex items-center gap-6 text-sm">
+            <Link
+              href="/internships"
+              className="hover:text-blue-600"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              Opportunities
+            </Link>
+
+            {session?.user ? (
+              <>
+                <Link
+                  href="/applications"
+                  className="hover:text-blue-600"
+                >
+                  Applications
+                </Link>
+
+                <Link
+                  href="/saved"
+                  className="hover:text-blue-600"
+                >
+                  Saved
+                </Link>
+
+                <span className="font-medium">
+                  Hi,{" "}
+                  {session.user.name?.split(" ")[0] || "there"}
+                </span>
+
+                <SignOutButton />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hover:text-blue-600"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  href="/signup"
+                  className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <section className="px-8 py-20">
+        <div className="mx-auto max-w-6xl">
+          <p className="font-medium text-blue-600">
+            Built for Nigerian Students
           </p>
+
+          <h1 className="mt-3 max-w-4xl text-5xl font-bold leading-tight">
+            Find SIWES & Internship Opportunities Without the
+            Stress.
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-lg text-gray-600">
+            Discover opportunities, save companies, track your
+            applications, and take control of your internship
+            journey.
+          </p>
+
+          <div className="mt-8 flex gap-4">
+            <Link
+              href="/internships"
+              className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700"
+            >
+              Find Opportunities
+            </Link>
+
+            <Link
+              href="/#how-it-works"
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium hover:bg-gray-50"
+            >
+              Learn More
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section
+        id="opportunities"
+        className="bg-gray-50 px-8 py-16"
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-3xl font-bold">
+            Everything You Need for Your Internship Journey
+          </h2>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-semibold">
+                Find Opportunities
+              </h3>
+
+              <p className="mt-3 text-gray-600">
+                Search for SIWES and internship opportunities
+                based on your interests and location.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-semibold">
+                Track Applications
+              </h3>
+
+              <p className="mt-3 text-gray-600">
+                Keep track of every application and know exactly
+                where you stand.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-semibold">
+                Improve Your CV
+              </h3>
+
+              <p className="mt-3 text-gray-600">
+                Get useful CV tips and eventually use AI to
+                improve your CV.
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section
+        id="how-it-works"
+        className="px-8 py-16"
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-3xl font-bold">
+            How InternLink NG Works
+          </h2>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div>
+              <p className="text-4xl font-bold text-blue-600">
+                1
+              </p>
+
+              <h3 className="mt-3 text-xl font-semibold">
+                Create Your Profile
+              </h3>
+
+              <p className="mt-2 text-gray-600">
+                Tell us about your course, skills, interests,
+                and location.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-bold text-blue-600">
+                2
+              </p>
+
+              <h3 className="mt-3 text-xl font-semibold">
+                Find Opportunities
+              </h3>
+
+              <p className="mt-2 text-gray-600">
+                Explore internships and SIWES opportunities that
+                match you.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-bold text-blue-600">
+                3
+              </p>
+
+              <h3 className="mt-3 text-xl font-semibold">
+                Track Your Journey
+              </h3>
+
+              <p className="mt-2 text-gray-600">
+                Save opportunities and track your applications
+                from start to finish.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t px-8 py-8">
+        <div className="mx-auto max-w-6xl text-sm text-gray-500">
+          © 2026 InternLink NG. Built for Nigerian students.
+        </div>
+      </footer>
+    </main>
   );
 }
