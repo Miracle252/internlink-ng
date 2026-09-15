@@ -44,7 +44,7 @@ export default function RootLayout({
 
         <footer className="w-full py-8 flex flex-col items-center justify-center gap-2">
           <img
-            src="/icon.svg"
+            src="/icons/apple-touch-icon.png"
             alt="InternLink"
             className="w-10 h-10"
           />
