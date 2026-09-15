@@ -1,73 +1,10 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth";
-import SignOutButton from "./components/SignOutButton";
+import Navbar from "./components/Navbar";
 
-export default async function HomePage() {
-  const session = await getServerSession(authOptions);
-
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-white text-gray-900">
-      <header className="border-b bg-white px-8 py-5">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link
-            href="/"
-            className="text-2xl font-bold"
-          >
-            InternLink NG
-          </Link>
-
-          <div className="flex items-center gap-6 text-sm">
-            <Link
-              href="/internships"
-              className="hover:text-blue-600"
-            >
-              Opportunities
-            </Link>
-
-            {session?.user ? (
-              <>
-                <Link
-                  href="/applications"
-                  className="hover:text-blue-600"
-                >
-                  Applications
-                </Link>
-
-                <Link
-                  href="/saved"
-                  className="hover:text-blue-600"
-                >
-                  Saved
-                </Link>
-
-                <span className="font-medium">
-                  Hi,{" "}
-                  {session.user.name?.split(" ")[0] || "there"}
-                </span>
-
-                <SignOutButton />
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="hover:text-blue-600"
-                >
-                  Login
-                </Link>
-
-                <Link
-                  href="/signup"
-                  className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <section className="px-8 py-20">
         <div className="mx-auto max-w-6xl">

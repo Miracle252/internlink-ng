@@ -1,14 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { internships } from "../../../lib/internships";
 
-const APPLICATIONS_COOKIE_NAME =
-  "internlink-applications";
-
-export default function ApplyPage() {
+function ApplyPageContent() {
   const searchParams = useSearchParams();
   const internshipId = searchParams.get("id");
 
@@ -17,64 +14,65 @@ export default function ApplyPage() {
   );
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function saveApplication() {
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [university, setUniversity] = useState("");
+  const [course, setCourse] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [cvFile, setCvFile] = useState<File | null>(null);
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
     if (!internship) {
       return;
     }
 
-    let existingApplications = [];
-
-    try {
-      const saved =
-        document.cookie
-          .split("; ")
-          .find((cookie) =>
-            cookie.startsWith(
-              `${APPLICATIONS_COOKIE_NAME}=`
-            )
-          );
-
-      if (saved) {
-        const value = saved.substring(
-          `${APPLICATIONS_COOKIE_NAME}=`.length
-        );
-
-        const decoded = decodeURIComponent(value);
-        const parsed: unknown = JSON.parse(decoded);
-
-        if (Array.isArray(parsed)) {
-          existingApplications = parsed;
-        }
-      }
-    } catch {
-      existingApplications = [];
+    if (!cvFile) {
+      setError("Please upload your CV.");
+      return;
     }
 
-    const newApplication = {
-      id: crypto.randomUUID(),
-      internshipId: internship.id,
-      status: "Applied",
-      date: new Date().toISOString(),
-    };
+    setLoading(true);
+    setError("");
 
-    const updatedApplications = [
-      ...existingApplications,
-      newApplication,
-    ];
+    try {
+      const formData = new FormData();
 
-    document.cookie = `${APPLICATIONS_COOKIE_NAME}=${encodeURIComponent(
-      JSON.stringify(updatedApplications)
-    )}; path=/; max-age=31536000; SameSite=Lax`;
+      formData.append("internshipId", internship.id);
+      formData.append("fullName", fullName);
+      formData.append("phone", phone);
+      formData.append("university", university);
+      formData.append("course", course);
+      formData.append("coverLetter", coverLetter);
+      formData.append("cv", cvFile);
 
-    setSubmitted(true);
-  }
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        body: formData,
+      });
 
-  function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-    saveApplication();
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data.error ||
+            "Something went wrong while submitting your application."
+        );
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!internship) {
@@ -86,8 +84,7 @@ export default function ApplyPage() {
           </h1>
 
           <p className="mt-3 text-gray-600">
-            Please go back and select an internship before
-            applying.
+            Please go back and select an internship before applying.
           </p>
 
           <Link
@@ -145,7 +142,10 @@ export default function ApplyPage() {
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <header className="border-b bg-white px-8 py-5">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link href="/" className="text-2xl font-bold">
+          <Link
+            href="/"
+            className="text-2xl font-bold"
+          >
             InternLink NG
           </Link>
 
@@ -159,24 +159,23 @@ export default function ApplyPage() {
 
             <Link
               href="/applications"
-              prefetch={false}
               className="hover:text-blue-600"
             >
               Applications
             </Link>
 
             <Link
-              href="/login"
+              href="/saved"
               className="hover:text-blue-600"
             >
-              Login
+              Saved
             </Link>
 
             <Link
-              href="/signup"
-              className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
+              href="/profile"
+              className="hover:text-blue-600"
             >
-              Get Started
+              Profile
             </Link>
           </div>
         </div>
@@ -220,8 +219,7 @@ export default function ApplyPage() {
               </h1>
 
               <p className="mt-3 text-gray-600">
-                Provide your details below to apply for this
-                opportunity.
+                Provide your details below to apply for this opportunity.
               </p>
             </div>
 
@@ -237,6 +235,10 @@ export default function ApplyPage() {
                 <input
                   type="text"
                   required
+                  value={fullName}
+                  onChange={(event) =>
+                    setFullName(event.target.value)
+                  }
                   placeholder="Enter your full name"
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
                 />
@@ -249,10 +251,15 @@ export default function ApplyPage() {
 
                 <input
                   type="email"
-                  required
-                  placeholder="you@example.com"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
+                  value=""
+                  placeholder="Your logged-in email"
+                  disabled
+                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-gray-500 outline-none"
                 />
+
+                <p className="mt-2 text-xs text-gray-500">
+                  Your logged-in email will be attached automatically.
+                </p>
               </div>
 
               <div>
@@ -263,6 +270,10 @@ export default function ApplyPage() {
                 <input
                   type="tel"
                   required
+                  value={phone}
+                  onChange={(event) =>
+                    setPhone(event.target.value)
+                  }
                   placeholder="08012345678"
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
                 />
@@ -276,6 +287,10 @@ export default function ApplyPage() {
                 <input
                   type="text"
                   required
+                  value={university}
+                  onChange={(event) =>
+                    setUniversity(event.target.value)
+                  }
                   placeholder="Enter your university"
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
                 />
@@ -289,6 +304,10 @@ export default function ApplyPage() {
                 <input
                   type="text"
                   required
+                  value={course}
+                  onChange={(event) =>
+                    setCourse(event.target.value)
+                  }
                   placeholder="e.g. Computer Science"
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
                 />
@@ -302,6 +321,10 @@ export default function ApplyPage() {
                 <textarea
                   required
                   rows={6}
+                  value={coverLetter}
+                  onChange={(event) =>
+                    setCoverLetter(event.target.value)
+                  }
                   placeholder="Tell the company why you are interested in this opportunity..."
                   className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
                 />
@@ -316,24 +339,58 @@ export default function ApplyPage() {
                   type="file"
                   accept=".pdf,.doc,.docx"
                   required
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    setCvFile(file);
+                    setError("");
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3"
                 />
 
+                {cvFile && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Selected: {cvFile.name}
+                  </p>
+                )}
+
                 <p className="mt-2 text-sm text-gray-500">
-                  Accepted formats: PDF, DOC, DOCX
+                  Accepted formats: PDF, DOC, DOCX. Maximum size: 5MB.
                 </p>
               </div>
 
+              {error && (
+                <p className="rounded-lg bg-red-50 p-4 text-sm text-red-600">
+                  {error}
+                </p>
+              )}
+
               <button
                 type="submit"
-                className="w-full rounded-lg bg-blue-600 px-6 py-4 font-medium text-white hover:bg-blue-700"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-600 px-6 py-4 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Submit Application
+                {loading
+                  ? "Submitting..."
+                  : "Submit Application"}
               </button>
             </form>
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+export default function ApplyPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center">
+          Loading...
+        </main>
+      }
+    >
+      <ApplyPageContent />
+    </Suspense>
   );
 }

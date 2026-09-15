@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  university String?
+  course     String?
+  location   String?
+  phone      String?
+  skills     String?
+  bio        String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Application {
+  id           String   @id @default(cuid())
+  userEmail    String
+  internshipId String
+  fullName     String
+  phone        String
+  university   String
+  course       String
+  coverLetter  String
+  cvFileName   String?
+  cvFileData   Bytes?
+  status       String   @default("Applied")
+  appliedAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userEmail, internshipId])
+}
