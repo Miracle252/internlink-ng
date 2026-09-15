@@ -39,7 +39,18 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <main className="flex-1">{children}</main>
+
+        <footer className="w-full py-8 flex flex-col items-center justify-center gap-2">
+          <img
+            src="/icon.svg"
+            alt="InternLink"
+            className="w-10 h-10"
+          />
+          <p className="text-sm text-gray-500">InternLink NG</p>
+        </footer>
+      </body>
     </html>
   );
 }
