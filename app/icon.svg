@@ -1,0 +1,69 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Dark premium background -->
+    <radialGradient id="bg" cx="50%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#252525"/>
+      <stop offset="55%" stop-color="#111111"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </radialGradient>
+
+    <!-- Metallic silver -->
+    <linearGradient id="silver" x1="150" y1="100" x2="390" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="20%" stop-color="#D9D9D9"/>
+      <stop offset="45%" stop-color="#8F8F8F"/>
+      <stop offset="65%" stop-color="#F2F2F2"/>
+      <stop offset="100%" stop-color="#777777"/>
+    </linearGradient>
+
+    <!-- Soft silver glow -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feColorMatrix
+        in="blur"
+        type="matrix"
+        values="1 0 0 0 0.7
+                0 1 0 0 0.7
+                0 0 1 0 0.7
+                0 0 0 0.55 0"
+      />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+
+  <!-- Subtle glow behind N -->
+  <path
+    d="M142 390V122H205L307 294V122H370V390H307L205 218V390H142Z"
+    fill="#C8C8C8"
+    opacity="0.28"
+    filter="url(#glow)"
+  />
+
+  <!-- Main N -->
+  <path
+    d="M142 390V122H205L307 294V122H370V390H307L205 218V390H142Z"
+    fill="url(#silver)"
+  />
+
+  <!-- Sharp diagonal cuts -->
+  <path
+    d="M205 122L235 122L307 244L307 294Z"
+    fill="#181818"
+  />
+
+  <path
+    d="M270 122L307 122L370 230V274Z"
+    fill="#181818"
+  />
+
+  <!-- Metallic highlight -->
+  <path
+    d="M151 132H194V365H151Z"
+    fill="#FFFFFF"
+    opacity="0.16"
+  />
+
+</svg>

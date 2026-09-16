@@ -7,17 +7,18 @@ datasource db {
 }
 
 model Profile {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  name       String?
-  university String?
-  course     String?
-  location   String?
-  phone      String?
-  skills     String?
-  bio        String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  name         String?
+  university   String?
+  course       String?
+  location     String?
+  phone        String?
+  skills       String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Application {
